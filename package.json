@@ -17,6 +17,8 @@
     "@nomicfoundation/hardhat-toolbox": "^1.0.2",
     "eslint": "8.34.0",
     "eslint-config-next": "13.2.1",
-    "hardhat": "^2.12.7"
+    "hardhat": "^2.12.7",
+    "prettier": "^2.8.4",
+    "prettier-plugin-solidity": "^1.1.2"
   }
 }

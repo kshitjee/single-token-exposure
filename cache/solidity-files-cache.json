@@ -1,0 +1,207 @@
+{
+  "_format": "hh-sol-cache-2",
+  "files": {
+    "/Users/kshitijchakravarty/Desktop/Development/single-token-exposure/denver-project/contracts/Matcher.sol": {
+      "lastModificationDate": 1677530537047,
+      "contentHash": "973301b5f1010d1688b144e896f2a919",
+      "sourceName": "contracts/Matcher.sol",
+      "solcConfig": {
+        "version": "0.8.9",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [],
+      "artifacts": []
+    },
+    "/Users/kshitijchakravarty/Desktop/Development/single-token-exposure/denver-project/contracts/MonoLiquidity.sol": {
+      "lastModificationDate": 1677617314809,
+      "contentHash": "f83adf70104d4c1c0d18e457754547a3",
+      "sourceName": "contracts/MonoLiquidity.sol",
+      "solcConfig": {
+        "version": "0.8.9",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "IERC20",
+        "IUniswapV2Factory",
+        "IUniswapV2Pair",
+        "IUniswapV2Router",
+        "MonoLiquidity"
+      ]
+    },
+    "/Users/kshitijchakravarty/Desktop/Development/single-token-exposure/denver-project/interfaces/IUniswapV2Pair.sol": {
+      "lastModificationDate": 1677530965659,
+      "contentHash": "9b9889f7f76db697c2a1dcc0b45bb56c",
+      "sourceName": "interfaces/IUniswapV2Pair.sol",
+      "solcConfig": {
+        "version": "0.8.9",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [],
+      "artifacts": [
+        "IUniswapV2Pair"
+      ]
+    },
+    "/Users/kshitijchakravarty/Desktop/Development/single-token-exposure/denver-project/interfaces/IUniswapV2Router.sol": {
+      "lastModificationDate": 1677530968324,
+      "contentHash": "0930a8c9b9eff104446d448ebe346725",
+      "sourceName": "interfaces/IUniswapV2Router.sol",
+      "solcConfig": {
+        "version": "0.8.9",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [],
+      "artifacts": [
+        "IUniswapV2Router"
+      ]
+    },
+    "/Users/kshitijchakravarty/Desktop/Development/single-token-exposure/denver-project/interfaces/IERC20.sol": {
+      "lastModificationDate": 1677530964103,
+      "contentHash": "90c79420e3ae533576d847bf66e4fad1",
+      "sourceName": "interfaces/IERC20.sol",
+      "solcConfig": {
+        "version": "0.8.9",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [],
+      "artifacts": [
+        "IERC20"
+      ]
+    },
+    "/Users/kshitijchakravarty/Desktop/Development/single-token-exposure/denver-project/interfaces/IUniswapV2Factory.sol": {
+      "lastModificationDate": 1677530966978,
+      "contentHash": "bfffe0303344faee97c18e16e02f884e",
+      "sourceName": "interfaces/IUniswapV2Factory.sol",
+      "solcConfig": {
+        "version": "0.8.9",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [],
+      "artifacts": [
+        "IUniswapV2Factory"
+      ]
+    }
+  }
+}
