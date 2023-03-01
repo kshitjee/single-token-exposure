@@ -9,6 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@openzeppelin/contracts": "^4.8.1",
+    "@uniswap/v2-core": "^1.0.1",
+    "@uniswap/v2-periphery": "^1.1.0-beta.0",
     "next": "13.2.1",
     "react": "18.2.0",
     "react-dom": "18.2.0"
