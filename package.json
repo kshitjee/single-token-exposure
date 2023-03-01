@@ -12,7 +12,10 @@
     "@openzeppelin/contracts": "^4.8.1",
     "@uniswap/v2-core": "^1.0.1",
     "@uniswap/v2-periphery": "^1.1.0-beta.0",
+    "ethers": "^6.0.8",
     "next": "13.2.1",
+    "node-fetch": "^3.3.0",
+    "qs": "^6.11.0",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   },
