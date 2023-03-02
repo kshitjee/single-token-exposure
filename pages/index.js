@@ -32,7 +32,11 @@ export default function Home() {
       <Rectangle>
         <DropDown options={tokenPairs} onTokenChange={handleTokenChange} />
       </Rectangle>
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        selectedToken={selectedToken}
+      />
     </div>
   );
 }
