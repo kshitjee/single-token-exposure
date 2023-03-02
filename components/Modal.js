@@ -1,7 +1,14 @@
 import styles from "./Modal.module.css";
 import Grid from "./Grid";
+import { useState } from "react";
 
 export default function Modal({ isOpen, onClose }) {
+  const [isGridVisible, setIsGridVisible] = useState(true);
+
+  function onPairSelected(title, address, tradingVolume24h, APY, impermanentLoss) {
+    setIsGridVisible(false);
+  }
+
   if (!isOpen) {
     return null;
   }
@@ -40,7 +47,9 @@ export default function Modal({ isOpen, onClose }) {
           &times;
         </button>
         <div className={styles.content}>
-          <Grid data={data} />
+          {isGridVisible ? (
+            <Grid data={data} onPairSelected={onPairSelected} />
+          ) : null}
         </div>
       </div>
     </div>

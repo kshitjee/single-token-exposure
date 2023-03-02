@@ -2,7 +2,7 @@ import React from "react";
 import Card from "./Card";
 import styles from "./Grid.module.css";
 
-const Grid = ({ data }) => {
+const Grid = ({ data, onPairSelected }) => {
   return (
     <div className={styles.grid}>
       {data.map(
@@ -14,6 +14,7 @@ const Grid = ({ data }) => {
             tradingVolume24h={tradingVolume24h}
             APY={APY}
             impermanentLoss={impermanentLoss}
+            onPairSelected={onPairSelected}
           />
         )
       )}
