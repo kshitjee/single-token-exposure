@@ -96,8 +96,6 @@ contract MonoLiquidity {
                 )
             ).div(1994)
         );
-        // return a.div(2);
-        // return sqrt(r.mul(10) + r.mul(a));
     }
 
     function calculateOptimalLiquidity(
@@ -106,7 +104,6 @@ contract MonoLiquidity {
         uint _amountA
     ) external {
         // get pair based on params, get reserves for each pair
-
         address pair = IUniswapV2Factory(FACTORY).getPair(_tokenA, _tokenB);
         (uint reserve0, uint reserve1, ) = IUniswapV2Pair(pair).getReserves();
         uint decimals = IERC20Metadata(_tokenA).decimals();
@@ -144,9 +141,9 @@ contract MonoLiquidity {
      */
     function zeroxSwap(
         // The `sellTokenAddress` field from the API response.
-        IERC20 sellToken,
+        address sellToken,
         // The `buyTokenAddress` field from the API response.
-        IERC20 buyToken,
+        address buyToken,
         // The `allowanceTarget` field from the API response.
         address spender,
         // The `to` field from the API response.
@@ -154,21 +151,21 @@ contract MonoLiquidity {
         // The `data` field from the API response.
         // It's the encoded data payload that needs to be sent to the 0x Exchange Proxy contract to execute the swap
         bytes calldata swapCallData
-    ) external payable {
+    ) internal {
         // Checks that the swapTarget is actually the address of 0x ExchangeProxy
         require(swapTarget == exchangeProxy, "Target not ExchangeProxy");
 
         // Give `spender` (0x contract) an infinite allowance to spend the `sellToken`
         // Note that for some tokens (e.g., USDT, KNC), you must first reset any existing allowance to 0
         require(
-            sellToken.approve(spender, type(uint256).max),
+            IERC20(sellToken).approve(spender, type(uint256).max),
             "allowance error"
         );
 
         // Track the initial user balance of the buyToken, so we can calculate how much was bought at the end
         // the calculation will be made by subtracting the initial balance from the final balance of the buyToken
         // @dev: this assumes that the msg.sender is the holder of the buyToken, if not, this needs to be changed
-        uint256 boughtAmount = buyToken.balanceOf(msg.sender);
+        uint256 boughtAmount = IERC20(buyToken).balanceOf(msg.sender);
 
         // Execute the swap by calling the 0x ExchangeProxy contract
         // Note that the swapCallData is the encoded data payload that needs to be sent to the 0x Exchange Proxy contract to execute the swap
@@ -188,10 +185,10 @@ contract MonoLiquidity {
         }
 
         // Calculate the amount of `buyToken` bought by subtracting the initial balance from the final balance
-        emit BoughtTokens(sellToken, buyToken, boughtAmount);
-        boughtAmount = buyToken.balanceOf(address(this));
+        emit BoughtTokens(IERC20(sellToken), IERC20(buyToken), boughtAmount);
+        boughtAmount = IERC20(buyToken).balanceOf(address(this));
         // Transfer the bought tokens directly to the msg.sender
-        require(buyToken.transfer(msg.sender, boughtAmount), "Transfer failed");
+        require(IERC20(buyToken).transfer(msg.sender, boughtAmount), "Transfer failed");
     }
 
     function addLiquidity(
@@ -199,9 +196,7 @@ contract MonoLiquidity {
         address _tokenB,
         uint256[] memory _amounts,
         address _liquidityProvider
-    ) external {
-        // can only deposit in new pair, cannot increase liquidity in existing pair for now
-
+    ) external payable {
         // get pair using uniswap factory interface
         address pair = IUniswapV2Factory(FACTORY).getPair(_tokenA, _tokenB);
         require(pair != address(0), "Pair does not exist");
@@ -225,10 +220,8 @@ contract MonoLiquidity {
         );
 
         // approve router to provide liquidity from this contract
-        uint balA = IERC20(_tokenA).balanceOf(address(this));
-        uint balB = IERC20(_tokenB).balanceOf(address(this));
-        IERC20(_tokenA).approve(ROUTER, balA);
-        IERC20(_tokenB).approve(ROUTER, balB);
+        IERC20(_tokenA).approve(ROUTER, IERC20(_tokenA).balanceOf(address(this)));
+        IERC20(_tokenB).approve(ROUTER, IERC20(_tokenB).balanceOf(address(this)));
 
         // provide liquidity
         (
@@ -238,8 +231,8 @@ contract MonoLiquidity {
         ) = IUniswapV2Router02(ROUTER).addLiquidity(
                 _tokenA,
                 _tokenB,
-                balA,
-                balB,
+                IERC20(_tokenA).balanceOf(address(this)),
+                IERC20(_tokenB).balanceOf(address(this)),
                 0,
                 0,
                 address(this),
@@ -365,16 +358,3 @@ contract MonoLiquidity {
     }
 }
 
-// A partial ERC20 interface
-interface IERC20 {
-    function balanceOf(address owner) external view returns (uint256);
-
-    function approve(address spender, uint256 amount) external returns (bool);
-
-    function transfer(address to, uint256 amount) external returns (bool);
-}
-
-// A partial WETH interface
-interface IWETH is IERC20 {
-    function deposit() external payable;
-}
