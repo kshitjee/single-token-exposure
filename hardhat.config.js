@@ -1,4 +1,5 @@
 require("@nomicfoundation/hardhat-toolbox");
+require("hardhat-deploy");
 
 // /** @type import('hardhat/config').HardhatUserConfig */
 // module.exports = {
@@ -29,5 +30,20 @@ module.exports = {
   defaultNetwork: "localhost",
   networks: {
     localhost: {},
+    hardhat: {
+      chainId: 31337,
+      blockConfirmations: 1,
+    },
+    forking: {
+      url: "https://mainnet.infura.io/v3/7cb66f0c8b864d089ed93c13f4f8da31",
+    },
+  },
+  namedAccounts: {
+    owner: {
+      default: 0,
+    },
+    liquidityProvider: {
+      default: 1,
+    },
   },
 };
