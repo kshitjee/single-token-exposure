@@ -10,34 +10,40 @@ export default function Modal({ isOpen, onClose, selectedToken }) {
   const [swapAmount, setSwapAmount] = useState(null);
   const [showOptimalLiquidity, setshowOptimalLiquidity] = useState(false);
 
-  //stores Covalent API data - USDC
-  const [usdcdai_lp24Hvol, setUsdcdai_Lp24Hvol] =
-    useState("trading volume 24h");
-  const [usdclink_lp24Vol, setUsdclink_Lp24Hvol] =
-    useState("trading volume 24h");
-  const [usdcusdt_lp24Hvol, setUsdcusdt_Lp24Hvol] =
+  // Stores Covalent API data
+  // ETH (WETH)
+  const [ethusdt_lp24Hvol, setEthusdt_Lp24Hvol] =
     useState("trading volume 24h");
 
-  // stores Covalent API data - DAI
-  const [dailink_lp24Hvol, setDailink_Lp24Hvol] =
+  // USDC
+  const [usdceth_lp24Hvol, setUsdceth_Lp24Hvol] =
     useState("trading volume 24h");
+
+  // DAI
+  const [daieth_lp24Hvol, setDaieth_Lp24Hvol] = useState("trading volume 24h");
   const [daiusdt_lp24Hvol, setDaiusdt_Lp24Hvol] =
     useState("trading volume 24h");
-
-  // stores Covalent API data - LINK
-  const [linkusdt_lp24Hvol, setLinkusdt_Lp24Hvol] =
+  const [daiusdc_lp24Hvol, setDaiusdc_Lp24Hvol] =
     useState("trading volume 24h");
-  const [linkdai_lp24Hvol, setLinkdai_Lp24Hvol] =
+
+  // LINK
+  const [linketh_lp24Hvol, setLinketh_Lp24Hvol] =
     useState("trading volume 24h");
 
   useEffect(() => {
     console.log(swapAmount);
   }, [swapAmount]);
 
+  useEffect(() => {
+    getLpSomePools();
+  }, []);
+
   const eth_mainnet = "eth-mainnet"; // Ethereum Mainnet, Goerli is not supported yet for LP data
   // DEX code to pass into Covalent API
   const uniswap = "uniswap_v2"; // Uniswap V2, Uniswap V3 is not supported yet
-  // list of Uniswap V2 pools: https://www.geckoterminal.com/eth/uniswap_v2/pools
+  // list of Uniswap V2 pools:
+  // https://v2.info.uniswap.org/pairs
+  // https://www.geckoterminal.com/eth/uniswap_v2/pools
 
   // get LP data with Covalent API
   const getLpData = async (pool_addr) => {
@@ -58,8 +64,63 @@ export default function Modal({ isOpen, onClose, selectedToken }) {
     }
   };
 
-  // example of getting LP data for Uniswap V2 USDC/WETH pool
-  getLpData("0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc");
+  // get LP data from some pools with Covalent API
+  // Uniswap V2 Mainnet Pools
+  const getLpSomePools = async () => {
+    // USDC/ETH
+    const response_usdceth = await getLpData(
+      "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc"
+    );
+    const lp24Hvol_data_usdceth = await response_usdceth.data.items[0]
+      .fee_24h_quote;
+    setUsdceth_Lp24Hvol(lp24Hvol_data_usdceth);
+    console.log("state of usdceth_lp24Hvol: ", usdceth_lp24Hvol);
+
+    // ETH/USDT
+    const response_ethusdt = await getLpData(
+      "0x0d4a11d5eeaac28ec3f61d100daf4d40471f1852"
+    );
+    const lp24Hvol_data_ethusdt = await response_ethusdt.data.items[0]
+      .fee_24h_quote;
+    setEthusdt_Lp24Hvol(lp24Hvol_data_ethusdt);
+    console.log("state of ethusdt_lp24Hvol: ", ethusdt_lp24Hvol);
+
+    // DAI/USDT
+    const response_daiusdt = await getLpData(
+      "0xb20bd5d04be54f870d5c0d3ca85d82b34b836405"
+    );
+    const lp24Hvol_data_daiusdt = await response_daiusdt.data.items[0]
+      .fee_24h_quote;
+    setDaiusdt_Lp24Hvol(lp24Hvol_data_daiusdt);
+    console.log("state of daiusdt_lp24Hvol: ", daiusdt_lp24Hvol);
+
+    // DAI/USDC
+    const response_daiusdc = await getLpData(
+      0xae461ca67b15dc8dc81ce7615e0320da1a9ab8d5
+    );
+    // const lp24Hvol_data_daiusdc = await response_daiusdc.data.items[0]; // this is giving error, then hard code the value
+    // setDaiusdc_Lp24Hvol(lp24Hvol_data_daiusdc);
+
+    // DAI/ETH
+    const response_daieth = await getLpData(
+      "0xa478c2975ab1ea89e8196811f51a7b7ade33eb11"
+    );
+    const lp24Hvol_data_daieth = await response_daieth.data.items[0]
+      .fee_24h_quote;
+    setDaieth_Lp24Hvol(lp24Hvol_data_daieth);
+    console.log("state of daieth_lp24Hvol: ", daieth_lp24Hvol);
+
+    // LINK/ETH
+    const response_linketh = await getLpData(
+      "0xa2107fa5b38d9bbd2c461d6edf11b11a50f6b974"
+    );
+    const lp24Hvol_data_linketh = await response_linketh.data.items[0]
+      .fee_24h_quote;
+    setLinketh_Lp24Hvol(lp24Hvol_data_linketh);
+    console.log("state of linketh_lp24Hvol: ", linketh_lp24Hvol);
+  };
+
+  // getLpSomePools();
 
   function onPairSelected(
     title,
