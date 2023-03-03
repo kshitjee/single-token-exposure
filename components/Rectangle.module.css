@@ -1,4 +1,4 @@
-.body {
+/* .body {
   margin: 0;
   padding: 0;
   display: flex;
@@ -21,4 +21,74 @@
   top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+*/ .body {
+  background-color: #212121;
+  overflow: hidden;
+}
+
+/* Set the styles for the rectangle */
+.center-rect {
+  width: 400px;
+  height: 200px;
+  background-color: #f1f1f1;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: #212121;
+  text-align: center;
+  z-index: 10;
+}
+
+/* Set the styles for the floating objects */
+.floating-object {
+  width: 50px;
+  height: 50px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  position: absolute;
+  animation: float 5s infinite;
+  z-index: 1;
+}
+
+/* Define the float animation */
+@keyframes float {
+  0% {
+    transform: translate(0, 0);
+  }
+
+  50% {
+    transform: translate(50px, 50px);
+  }
+
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+/* Set the styles for the first floating object */
+.floating-object-1 {
+  top: 50%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+/* Set the styles for the second floating object */
+.floating-object-2 {
+  top: 20%;
+  left: 70%;
+  animation-delay: 1s;
+}
+
+/* Set the styles for the third floating object */
+.floating-object-3 {
+  top: 80%;
+  left: 50%;
+  animation-delay: 2s;
 }
