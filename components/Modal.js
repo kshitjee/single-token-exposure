@@ -7,8 +7,8 @@ export default function Modal({ isOpen, onClose, selectedToken }) {
   const [isGridVisible, setIsGridVisible] = useState(true);
   const [selectedPair, setSelectedPair] = useState(null); // define selectedPair state
   const [showStats, setShowStats] = useState(false);
-  const [depositAmount, setdepositAmount] = useState(false);
   const [swapAmount, setSwapAmount] = useState(null);
+  const [showOptimalLiquidity, setshowOptimalLiquidity] = useState(false);
 
   useEffect(() => {
     console.log(swapAmount);
@@ -25,10 +25,14 @@ export default function Modal({ isOpen, onClose, selectedToken }) {
     setSelectedPair({ title, address, tradingVolume24h, APY, impermanentLoss });
   }
 
+  async function handleCustomizeLiquidityParams(event) {
+    event.preventDefault();
+    setshowOptimalLiquidity(true);
+  }
+
   async function handleSubmit(event) {
     event.preventDefault();
     const depositAmount = event.target.depositAmount.value;
-    setdepositAmount(depositAmount);
     const data = {
       depositAmount: depositAmount,
       pair: selectedPair,
@@ -47,7 +51,9 @@ export default function Modal({ isOpen, onClose, selectedToken }) {
     });
 
     const resData = await res.json();
-    setSwapAmount(resData);
+    console.log(resData);
+    setSwapAmount(resData.amountWithDecimals);
+    // set state variables
   }
 
   if (!isOpen) {
@@ -88,7 +94,9 @@ export default function Modal({ isOpen, onClose, selectedToken }) {
           &times;
         </button>
         <div className={styles.content}>
-          {showStats ? (
+          {showOptimalLiquidity ? (
+            <div>Sample</div>
+          ) : showStats ? (
             <div>
               <div className={styles.stat}>
                 <span className={styles.statLabel}>
@@ -103,9 +111,12 @@ export default function Modal({ isOpen, onClose, selectedToken }) {
                   )}{" "}
                 </span>
               </div>
-
-              <button type="submit" className={styles.formSubmit}>
-                Submit
+              <button
+                type="type"
+                className={styles.formSubmit}
+                onClick={(e) => handleCustomizeLiquidityParams(e)}
+              >
+                Customize Liquidity Parameters
               </button>
             </div>
           ) : (

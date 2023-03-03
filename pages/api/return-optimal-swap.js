@@ -2,7 +2,6 @@
 const { network, getNamedAccounts, deployments, ethers } = require("hardhat");
 const { developmentChains } = require("../../helper-hardhat-config");
 import { abi } from "../../abi";
-const axios = require("axios");
 
 //0xF85895D097B2C25946BB95C4d11E2F3c035F8f0C
 
@@ -15,7 +14,6 @@ export default async function handler(req, res) {
   };
 
   // console.log(req.body);
-  const owner = (await getNamedAccounts()).owner;
   await deployments.fixture(["all"]);
   const monoLiquidity = await ethers.getContractAt(
     abi,
@@ -48,5 +46,12 @@ export default async function handler(req, res) {
   const amountWithDecimals = amountToSwap / 10 ** decimals;
   console.log(amountWithDecimals);
 
-  res.status(200).json(amountWithDecimals);
+  const data = {
+    amountToSwap: amountToSwap,
+    amountWithDecimals: amountWithDecimals,
+    tokenA: req.body.tokenA,
+    tokenB: tokenB,
+  };
+
+  res.status(200).json(data);
 }
