@@ -17,7 +17,7 @@ export default async function handler(req, res) {
   await deployments.fixture(["all"]);
   const monoLiquidity = await ethers.getContractAt(
     abi,
-    "0xd977422c9eE9B646f64A4C4389a6C98ad356d8C4"
+    "0x0b27a79cb9C0B38eE06Ca3d94DAA68e0Ed17F953"
   );
 
   // console.log(monoLiquidity);
@@ -37,6 +37,7 @@ export default async function handler(req, res) {
   );
   // console.log(txrequest);
   const receipt = await txrequest.wait(1);
+  console.log(receipt);
   const optimalLiquidityInfo = receipt.events[0].args;
   // console.log(optimalLiquidityInfo);
   const amountToSwapBigInt = optimalLiquidityInfo[2];
