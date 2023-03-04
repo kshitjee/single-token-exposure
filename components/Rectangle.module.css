@@ -24,8 +24,8 @@
 }
 
 */ .body {
-  background-color: #212121;
-  overflow: hidden;
+  background-image: url('https: //media2.giphy.com/media/4H3Ii5eLChYul9p7NL/giphy.gif?cid=ecf05e47u64zsa48nytej5d0in0ac6zb7lz5ygjqqkun2sp9&rid=giphy.gif&ct=g'),
+      /* overflow: hidden; */
 }
 
 /* Set the styles for the rectangle */

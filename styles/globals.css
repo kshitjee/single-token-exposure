@@ -1,14 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* body {
-  background: rgb(0, 0, 0);
-  background: linear-gradient(
-    90deg,
-    rgb(0, 0, 0) 0%,
-    rgb(2, 0, 0) 35%,
-    rgb(1, 30, 35) 100%
-  );
+body {
+  background-image: url('https: //media2.giphy.com/media/4H3Ii5eLChYul9p7NL/giphy.gif?cid=ecf05e47u64zsa48nytej5d0in0ac6zb7lz5ygjqqkun2sp9&rid=giphy.gif&ct=g');
 }
 
-*/
