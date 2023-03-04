@@ -56,7 +56,7 @@ export default function Modal({ isOpen, onClose, selectedToken }) {
 
       const lp24Hvol_data = await response.data.items[0].fee_24h_quote;
 
-      console.log(response.data.items[0].fee_24h_quote);
+      // console.log(response.data.items[0].fee_24h_quote);
 
       return response;
     } catch (error) {
@@ -171,25 +171,25 @@ export default function Modal({ isOpen, onClose, selectedToken }) {
   const data = [
     {
       id: 1,
-      title: "USDC/DAI",
-      address: "0x0c670AcA9AA0285B961F1D4AB7D4e462C7982311",
-      tradingVolume24h: "trading volume 24h",
+      title: "USDC/ETH",
+      address: "0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc",
+      tradingVolume24h: `${usdceth_lp24Hvol}`,
       APY: "37%",
       impermanentLoss: "impermanent loss",
     },
     {
       id: 2,
-      title: "USDC/LINK",
-      address: "0x0c670AcA9AA0285B961F1D4AB7D4e462C7982311",
-      tradingVolume24h: "trading volume 24h",
+      title: "ETH/USDT",
+      address: "0x0d4a11d5eeaac28ec3f61d100daf4d40471f1852",
+      tradingVolume24h: `${ethusdt_lp24Hvol}`,
       APY: "37%",
       impermanentLoss: "impermanent loss",
     },
     {
       id: 3,
-      title: "USDC/USDT",
-      address: "0x0c670AcA9AA0285B961F1D4AB7D4e462C7982311",
-      tradingVolume24h: "trading volume 24h",
+      title: "LINK/ETH",
+      address: "0xa2107fa5b38d9bbd2c461d6edf11b11a50f6b974",
+      tradingVolume24h: `${linketh_lp24Hvol}`,
       APY: "37%",
       impermanentLoss: "impermanent loss",
     },
@@ -240,7 +240,7 @@ export default function Modal({ isOpen, onClose, selectedToken }) {
                       {selectedPair.address}
                     </span>
                   </div>
-                  <div className={styles.stat}>
+                  <div className={styles.statL}>
                     <span className={styles.statLabel}>
                       Trading Volume 24h:
                     </span>
