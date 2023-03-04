@@ -1,6 +1,7 @@
 import Rectangle from "../components/Rectangle";
 import DropDown from "../components/DropDown";
 import Modal from "../components/Modal";
+import LandingPage from "../components/LandingPage"
 import { useState } from "react";
 
 export default function Home() {
@@ -29,6 +30,7 @@ export default function Home() {
 
   return (
     <div>
+
       <Rectangle>
         <DropDown options={tokenPairs} onTokenChange={handleTokenChange} />
       </Rectangle>
