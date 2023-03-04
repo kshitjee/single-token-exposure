@@ -1,4 +1,4 @@
-.overlay {
+/* .overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -100,4 +100,139 @@
 
 .formSubmit:hover {
   background-color: #c0392b;
+}
+
+*/ .overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal {
+  position: relative;
+  background-color: #1c1c1e;
+  color: #fff;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  border-radius: 10px;
+  padding: 20px;
+  animation-name: fadeIn;
+  animation-duration: 0.3s;
+}
+
+.closeButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 20px;
+  color: #fff;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.closeButton:hover {
+  color: #bbb;
+}
+
+.content {
+  margin-top: 20px;
+}
+
+.h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.statLabel {
+  font-size: 18px;
+  font-weight: 600;
+  margin-right: 10px;
+  text-align: left;
+  /* Add this line to align the label to the left */
+  flex: 1;
+  /* Add this line to make the label take up all available space */
+}
+
+.statValue {
+  font-size: 18px;
+  font-weight: 400;
+  text-align: right;
+  /* Add this line to align the value to the right */
+}
+
+.form {
+  margin-top: 20px;
+}
+
+.formLabel {
+  display: block;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #bbb;
+}
+
+.formInput {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  font-size: 18px;
+  border-radius: 5px;
+  border: 1px solid #555;
+  background-color: #1c1c1e;
+  color: #fff;
+}
+
+.formSubmit {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  font-size: 18px;
+  font-weight: 600;
+  background-color: #50c878;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: background-color 0.3s;
+}
+
+.formSubmit:hover {
+  background-color: #3ea260;
+}
+
+@media (max-width: 767px) {
+  .modal {
+    max-width: 100%;
+    border-radius: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
