@@ -36,3 +36,15 @@ Fork the repository on GitHub
 Make the necessary changes or bug fixes
 Open a pull request to merge your changes into the main branch
 Wait for the Liquidease team to review your changes and merge them if they are accepted
+
+# Bounties:
+0x API Swap is under contracts/MonoLiquidity and under scripts/swap0x.
+OpenZeppelin Defender scripts can be found under the scripts folder, labelled auto task.
+Chainlink AggregatorV3Interface used in contracts/MonoLiquidity
+
+
+
+
+
+
+
