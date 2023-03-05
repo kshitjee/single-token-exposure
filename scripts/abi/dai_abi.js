@@ -1,4 +1,4 @@
-const dai_abi = [
+export const dai_abi = [
   { inputs: [], stateMutability: "nonpayable", type: "constructor" },
   {
     anonymous: false,
