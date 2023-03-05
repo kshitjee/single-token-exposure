@@ -13,7 +13,6 @@ pragma solidity ^0.8.0;
 // wbtc 0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599
 // weth 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
 
-
 // 7336314000000000000000000 * 10**18; 0xB5F97357D1B443432a5CAC14EdddBAab4b5F65BF mock dai
 // 4689000000000000000000 * 10**18;  0xf772505ca5ba7aecf394ea0fe48ff4bf33bb6b62 mock eth
 // mock lp address = 0x7a884A791a8E86306AF26C1869a81D204cb50030
@@ -51,6 +50,8 @@ contract MonoLiquidity {
   /* state variables */
   uint256 volume0;
   uint256 volume1;
+  uint256 diff1;
+  uint256 diff2;
   address private deployer;
   mapping(address => Deposit[]) userToDeposit;
   mapping(address => mapping(address => uint256)) userToTokenToBalance;
@@ -86,79 +87,106 @@ contract MonoLiquidity {
     uint initalSupply1
   );
 
-  event Reserves(
-    uint reserve0,
-    uint reserve1
-  );
+  event Reserves(uint reserve0, uint reserve1);
+
+  event Hello(string hello);
+  event Goodbye(string goodbye);
+  event Calculation(uint volume);
 
   // it's emited when a swap is executed and returns the amount of bought tokens
   event BoughtTokens(IERC20 sellToken, IERC20 buyToken, uint256 boughtAmount);
 
-
   /* constructor */
-  constructor(uint initialSupply0, uint initialSupply1, address _liquidityPool) {
+  constructor(
+    uint initialSupply0,
+    uint initialSupply1,
+    address _liquidityPool
+  ) {
     deployer = msg.sender;
     lpToSupply24h[_liquidityPool].push(initialSupply0);
     lpToSupply24h[_liquidityPool].push(initialSupply1);
   }
 
   /* functions */
-  function getTokenValue(address _token, uint256 _amount) internal view returns (uint256) {
+  function getTokenValue(
+    address _token,
+    uint256 _amount
+  ) external returns (uint256) {
     address priceFeedAddr;
-      if (_token == 0x6B175474E89094C44Da98b954EedeAC495271d0F) {
-        priceFeedAddr = 0x0d79df66BE487753B02D015Fb622DED7f0E9798d;
-      }
-      else {
-        priceFeedAddr = 0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e;
-      }
-        AggregatorV3Interface priceFeed = AggregatorV3Interface(priceFeedAddr); // Replace with appropriate ETH/USD price feed address for your network
-        (, int256 answer, , , ) = priceFeed.latestRoundData();
-        uint256 tokenPrice = uint256(answer);
-        uint256 tokenDecimals = IERC20Metadata(_token).decimals();
-        uint256 tokenValue = (_amount * tokenPrice) / (10 ** tokenDecimals);
-
-        return tokenValue;
+    if (_token == 0x6B175474E89094C44Da98b954EedeAC495271d0F) {
+      priceFeedAddr = 0x0d79df66BE487753B02D015Fb622DED7f0E9798d;
+    } else {
+      priceFeedAddr = 0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e;
     }
+    AggregatorV3Interface priceFeed = AggregatorV3Interface(priceFeedAddr); // Replace with appropriate ETH/USD price feed address for your network
+    (, int256 answer, , , ) = priceFeed.latestRoundData();
+    uint256 tokenPrice = uint256(answer);
+    uint256 tokenDecimals = IERC20Metadata(_token).decimals();
+    uint256 tokenValue = (_amount * tokenPrice) / (10 ** tokenDecimals);
+
+    return tokenValue;
+  }
 
   function getReserves(address _liquidityPool) external {
-    (uint256 currentSupply0, uint256 currentSupply1, ) = IUniswapV2Pair(_liquidityPool).getReserves();
+    (uint256 currentSupply0, uint256 currentSupply1, ) = IUniswapV2Pair(
+      _liquidityPool
+    ).getReserves();
     emit Reserves(currentSupply0, currentSupply1);
-
   }
-
 
   function calculateLPStats(address _liquidityPool) external {
-        (uint256 currentSupply0, uint256 currentSupply1, ) = IUniswapV2Pair(_liquidityPool).getReserves();
-        // uint256 initalSupply0 = (lpToSupply24h[_liquidityPool][0]);
-        // uint256 initalSupply1 = (lpToSupply24h[_liquidityPool][1]);
-        
-        uint256[2] memory currentSupplies = [currentSupply0, currentSupply1];
+    (uint256 currentSupply0, uint256 currentSupply1, ) = IUniswapV2Pair(
+      _liquidityPool
+    ).getReserves();
+    // uint256 initalSupply0 = (lpToSupply24h[_liquidityPool][0]);
+    // uint256 initalSupply1 = (lpToSupply24h[_liquidityPool][1]);
 
-        if (currentSupply0 > (lpToSupply24h[_liquidityPool][0])) {
-          volume0 = getTokenValue(0x6B175474E89094C44Da98b954EedeAC495271d0F, currentSupply0 - (lpToSupply24h[_liquidityPool][0]));
-        } else {
-          volume0 = getTokenValue(0x6B175474E89094C44Da98b954EedeAC495271d0F, (lpToSupply24h[_liquidityPool][0]) - currentSupply0);
-        }
-        if (currentSupply1 > (lpToSupply24h[_liquidityPool][1])) {
-          volume1 = getTokenValue(0x7Dc0bB34236c6FF881a11d3d5042E26ff1740a6d, currentSupply1 - (lpToSupply24h[_liquidityPool][1]));
-        } else {
-          volume1 = getTokenValue(0x7Dc0bB34236c6FF881a11d3d5042E26ff1740a6d, (lpToSupply24h[_liquidityPool][1]) - currentSupply1);
-        }
-        uint256 dailyVolume = volume0 + volume1;
-        lpToSupply24h[_liquidityPool] = currentSupplies; 
+    uint256[2] memory currentSupplies = [currentSupply0, currentSupply1];
 
-        emit LPStatsCalculated(
-          _liquidityPool,
-          dailyVolume,
-          currentSupply0,
-          currentSupply1,
-          volume0,
-          volume1,
-          (lpToSupply24h[_liquidityPool][0]),
-          (lpToSupply24h[_liquidityPool][1])
-        );
+    if (currentSupply0 > (lpToSupply24h[_liquidityPool][0])) {
+      diff1 = currentSupply0 - lpToSupply24h[_liquidityPool][0];
+      volume0 = getTokenValue(
+        0x6B175474E89094C44Da98b954EedeAC495271d0F,
+        diff1
+      );
+      emit Calculation(volume0);
+    } else {
+      diff1 = lpToSupply24h[_liquidityPool][0] - currentSupply0;
+      volume0 = getTokenValue(
+        0x6B175474E89094C44Da98b954EedeAC495271d0F,
+        diff1
+      );
+      emit Calculation(volume0);
+    }
+    if (currentSupply1 > (lpToSupply24h[_liquidityPool][1])) {
+      diff2 = currentSupply1 - lpToSupply24h[_liquidityPool][1];
+      volume1 = getTokenValue(
+        0x7Dc0bB34236c6FF881a11d3d5042E26ff1740a6d,
+        diff2
+      );
+    } else {
+      diff2 = lpToSupply24h[_liquidityPool][1] - currentSupply1;
+      volume1 = getTokenValue(
+        0x7Dc0bB34236c6FF881a11d3d5042E26ff1740a6d,
+        diff2
+      );
+      emit Goodbye("goodbye");
+      emit Calculation(volume1);
+    }
+    // uint256 dailyVolume = volume0 + volume1;
+    // lpToSupply24h[_liquidityPool] = currentSupplies;
+
+    // emit LPStatsCalculated(
+    //   _liquidityPool,
+    //   dailyVolume,
+    //   currentSupply0,
+    //   currentSupply1,
+    //   volume0,
+    //   volume1,
+    //   (lpToSupply24h[_liquidityPool][0]),
+    //   (lpToSupply24h[_liquidityPool][1])
+    // );
   }
-
 
   function getSwapAmount(
     uint r,
