@@ -6,8 +6,6 @@ export default function Rectangle(props) {
     <div className="relative flex flex-col items-center justify-center w-screen h-screen overflow-hidden">
       <div className="absolute inset-0 z-0 bg-gradient-to-r from-gray-700 via-gray-800 to-gray-900  animate-pulse"></div>
 
-
-
       <div className="absolute inset-0 bg-blur z-10"></div>
       <div className="z-20 animate-bounce text-white font-bold text-5xl tracking-wider mb-4">
         Decentralized AVM Interest Swap Platform
@@ -25,12 +23,9 @@ export default function Rectangle(props) {
       <div className="z-20 text-white text-base md:text-lg lg:text-xl font-medium mb-4 text-center max-w-2xl">
         Join us and revolutionize the way you swap AVM assets.
       </div>
-
     </div>
   );
 }
-
-
 
 // import React from "react";
 // import { Particles } from "react-tsparticles";
@@ -167,7 +162,6 @@ export default function Rectangle(props) {
 // import { motion } from 'framer-motion';
 // import Particles from 'react-tsparticles';
 // import { FiArrowRight } from 'react-icons/fi';
-
 
 // const particlesConfig = {
 //   background: {
@@ -415,5 +409,3 @@ export default function Rectangle(props) {
 //     </div>
 //   );
 // }
-
-
