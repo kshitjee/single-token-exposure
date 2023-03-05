@@ -3,12 +3,6 @@ import { ethers } from "ethers";
 import qs from "qs";
 import axios from "axios";
 import fetch from "node-fetch";
-
-// import { dai_abi } from "./abi/dai_abi";
-// import { eth_abi } from "./abi/eth_abi";
-// const axios = require("axios");
-// import { abi } from "../../abi";
-
 const BigNumber = ethers.BigNumber;
 
 const dai_abi = [
@@ -284,7 +278,7 @@ const swap0x = async () => {
 
   // Fetch the swap quote.
   const response_swap = await fetch(
-    `https://api.0x.org/swap/v1/quote?${qs.stringify(params)}`
+    `https://goerli.api.0x.org/swap/v1/quote?${qs.stringify(params)}`
   );
 
   // Perform the swap.
