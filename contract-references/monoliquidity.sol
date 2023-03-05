@@ -14,7 +14,7 @@ pragma solidity ^0.8.0;
 // weth 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
 
 // 7336314000000000000000000 * 10**18; 0xB5F97357D1B443432a5CAC14EdddBAab4b5F65BF mock dai
-// 4689000000000000000000 * 10**18;  0xf772505ca5ba7aecf394ea0fe48ff4bf33bb6b62 mock eth
+// 4689000000000000000000 * 10**18;  0xf772505CA5bA7AeCf394Ea0Fe48ff4BF33bB6B62 mock eth
 // mock lp address = 0x7a884A791a8E86306AF26C1869a81D204cb50030
 
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
@@ -92,6 +92,7 @@ contract MonoLiquidity {
   event Hello(string hello);
   event Goodbye(string goodbye);
   event Calculation(uint volume);
+  event Allowance(uint amountA, uint amountB);
 
   // it's emited when a swap is executed and returns the amount of bought tokens
   event BoughtTokens(IERC20 sellToken, IERC20 buyToken, uint256 boughtAmount);
@@ -111,9 +112,9 @@ contract MonoLiquidity {
   function getTokenValue(
     address _token,
     uint256 _amount
-  ) external returns (uint256) {
+  ) internal view returns (uint256) {
     address priceFeedAddr;
-    if (_token == 0x6B175474E89094C44Da98b954EedeAC495271d0F) {
+    if (_token == 0xB5F97357D1B443432a5CAC14EdddBAab4b5F65BF) {
       priceFeedAddr = 0x0d79df66BE487753B02D015Fb622DED7f0E9798d;
     } else {
       priceFeedAddr = 0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e;
@@ -146,14 +147,14 @@ contract MonoLiquidity {
     if (currentSupply0 > (lpToSupply24h[_liquidityPool][0])) {
       diff1 = currentSupply0 - lpToSupply24h[_liquidityPool][0];
       volume0 = getTokenValue(
-        0x6B175474E89094C44Da98b954EedeAC495271d0F,
+        0xB5F97357D1B443432a5CAC14EdddBAab4b5F65BF,
         diff1
       );
       emit Calculation(volume0);
     } else {
       diff1 = lpToSupply24h[_liquidityPool][0] - currentSupply0;
       volume0 = getTokenValue(
-        0x6B175474E89094C44Da98b954EedeAC495271d0F,
+        0xB5F97357D1B443432a5CAC14EdddBAab4b5F65BF,
         diff1
       );
       emit Calculation(volume0);
@@ -302,8 +303,7 @@ contract MonoLiquidity {
   function addLiquidity(
     address _tokenA,
     address _tokenB,
-    uint256[] memory _amounts,
-    address _liquidityProvider
+    uint256[] memory _amounts
   ) external payable {
     // get pair using uniswap factory interface
     address pair = IUniswapV2Factory(FACTORY).getPair(_tokenA, _tokenB);
@@ -311,19 +311,11 @@ contract MonoLiquidity {
 
     // liquidity provider deposits tokens to this contract
     require(
-      IERC20(_tokenA).transferFrom(
-        _liquidityProvider,
-        address(this),
-        _amounts[0]
-      ),
+      IERC20(_tokenA).transferFrom(msg.sender, address(this), _amounts[0]),
       "Deposit for token A failed"
     );
     require(
-      IERC20(_tokenB).transferFrom(
-        _liquidityProvider,
-        address(this),
-        _amounts[1]
-      ),
+      IERC20(_tokenB).transferFrom(msg.sender, address(this), _amounts[1]),
       "Deposit for token B failed"
     );
 
@@ -359,12 +351,12 @@ contract MonoLiquidity {
       amountProvided: amountsProvided,
       LPTokensReceived: lpTokensMinted
     });
-    userToDeposit[_liquidityProvider].push(deposit);
-    userToTokenToBalance[_liquidityProvider][_tokenA] += (_amounts[0] -
+    userToDeposit[msg.sender].push(deposit);
+    userToTokenToBalance[msg.sender][_tokenA] += (_amounts[0] -
       amountsProvided[0]);
-    userToTokenToBalance[_liquidityProvider][_tokenA] += (_amounts[1] -
+    userToTokenToBalance[msg.sender][_tokenA] += (_amounts[1] -
       amountsProvided[1]);
-    emit LiquidityProvided(_liquidityProvider, pair, amountsProvided);
+    emit LiquidityProvided(msg.sender, pair, amountsProvided);
   }
 
   // might need modifier, check if can be done via defender first
