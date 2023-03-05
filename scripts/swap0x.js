@@ -4,7 +4,7 @@ import qs from "qs";
 import axios from "axios";
 import fetch from "node-fetch";
 const BigNumber = ethers.BigNumber;
-import { dai_abi } from "./abi/dai_abi";
+import { dai_abi } from "./abi/dai_abi.js";
 
 // mainnet
 // const API_QUOTE_URL = "https://api.0x.org/swap/v1/quote";
@@ -18,7 +18,7 @@ const API_QUOTE_URL = "https://goerli.api.0x.org/swap/v1/quote";
 
 const zeroxProxy_goerly = "0xf91bb752490473b8342a3e964e855b9f9a2a668e";
 
-const sellAmount = 1223343434;
+const sellAmount = 122334343434;
 
 const sellAmountWei = BigNumber.from(sellAmount);
 
@@ -31,29 +31,17 @@ function createQueryString(params) {
 const swap0x = async () => {
   /* getQuote */
   // Convert sell amount to wei
-  //   const sellAmountWei = ethers.utils.parseUnits(String(sellAmount), "ether");
 
   const qs = createQueryString({
     sellToken: "0xB5F97357D1B443432a5CAC14EdddBAab4b5F65BF",
     buyToken: "0xf772505ca5ba7aecf394ea0fe48ff4bf33bb6b62",
     sellAmount: sellAmountWei,
-    takerAddress: "0x95a548A77f41d64f5F0d6905f8F9CD3aeFe972A9",
   });
   const quoteUrl = `${API_QUOTE_URL}?${qs}`;
   const response = await axios.get(quoteUrl);
   const quote = response.data;
 
   console.log("quote: ", quote);
-
-  const sellTokenAddress = quote.sellTokenAddress;
-
-  const buyTokenAddress = quote.buyTokenAddress;
-
-  const allowanceTarget = quote.allowanceTarget;
-
-  const swapTarget = quote.to;
-
-  const callData = quote.data;
 
   /* zeroxswap */
   // Second parameter is chainId, 5 is Goerli testnet
@@ -62,7 +50,7 @@ const swap0x = async () => {
     5
   );
 
-  const signer = new ethers.Wallet("_PRIVATE_KEY_", provider);
+  const signer = new ethers.Wallet("__private_key__", provider);
 
   // Set up a DAI allowance on the 0x contract if needed.
   const dai = new ethers.Contract(
@@ -80,13 +68,6 @@ const swap0x = async () => {
     const tx = await dai.approve(zeroxProxy_goerly, sellAmountWei);
     await tx.wait();
   }
-
-  const params = {
-    sellToken: "0xB5F97357D1B443432a5CAC14EdddBAab4b5F65BF",
-    buyToken: "0xf772505ca5ba7aecf394ea0fe48ff4bf33bb6b62",
-    sellAmount: "10000000000",
-    takerAddress: "0x95a548A77f41d64f5F0d6905f8F9CD3aeFe972A9",
-  };
 
   // Fetch the swap quote.
   const response_swap = await fetch(`${quoteUrl}`);
