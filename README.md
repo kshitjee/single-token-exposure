@@ -3,7 +3,8 @@
 Sourcify: https://repo.sourcify.dev/contracts/full_match/5/0xaFaa7c12f7bba0C094CEE44B47fba153e859d799/
 
 # Introduction:
-Liquidease is a decentralized finance (DeFi) project that simplifies liquidity provision for users through customizable triggers for asset removal. This README provides an overview of the project, how to use it, and how to contribute to its development.
+LiquidEase is an innovative DeFi technology whose goal is to boost the adoption of DeFi by lowering friction for liquidity providers. In conventional LP models, in order to provide liquidity, a liquidity provider must provide two or more tokens. By giving liquidity providers the choice to supply single-sided liquidity, LiquidEase aims to expedite this procedure.
+
 
 # Installation:
 To install Liquidease, follow these steps:
