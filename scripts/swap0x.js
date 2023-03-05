@@ -16,6 +16,13 @@ const API_QUOTE_URL = "https://goerli.api.0x.org/swap/v1/quote";
 // DAI: 0xB5F97357D1B443432a5CAC14EdddBAab4b5F65BF
 // ETH: 0xf772505CA5bA7AeCf394Ea0Fe48ff4BF33bB6B62
 
+// goerli
+const dai_addr = "0xB5F97357D1B443432a5CAC14EdddBAab4b5F65BF";
+const eth_addr = "0xf772505CA5bA7AeCf394Ea0Fe48ff4BF33bB6B62";
+
+// address of the user which will set the allowance to the 0x contract
+const user_addr = "__user_address__";
+
 const zeroxProxy_goerly = "0xf91bb752490473b8342a3e964e855b9f9a2a668e";
 
 const sellAmount = 122334343434;
@@ -33,8 +40,8 @@ const swap0x = async () => {
   // Convert sell amount to wei
 
   const qs = createQueryString({
-    sellToken: "0xB5F97357D1B443432a5CAC14EdddBAab4b5F65BF",
-    buyToken: "0xf772505ca5ba7aecf394ea0fe48ff4bf33bb6b62",
+    sellToken: dai_addr,
+    buyToken: eth_addr,
     sellAmount: sellAmountWei,
   });
   const quoteUrl = `${API_QUOTE_URL}?${qs}`;
@@ -53,16 +60,9 @@ const swap0x = async () => {
   const signer = new ethers.Wallet("__private_key__", provider);
 
   // Set up a DAI allowance on the 0x contract if needed.
-  const dai = new ethers.Contract(
-    "0xB5F97357D1B443432a5CAC14EdddBAab4b5F65BF",
-    dai_abi,
-    signer
-  );
+  const dai = new ethers.Contract(dai_addr, dai_abi, signer);
 
-  const currentAllowance = await dai.allowance(
-    "0x95a548A77f41d64f5F0d6905f8F9CD3aeFe972A9",
-    zeroxProxy_goerly
-  );
+  const currentAllowance = await dai.allowance(user_addr, zeroxProxy_goerly);
 
   if (currentAllowance.lt(sellAmountWei)) {
     const tx = await dai.approve(zeroxProxy_goerly, sellAmountWei);
