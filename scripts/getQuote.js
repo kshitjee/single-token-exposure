@@ -5,7 +5,7 @@ import fetch from "node-fetch";
 const API_QUOTE_URL = "https://goerli.api.0x.org/swap/v1/quote";
 // const API_QUOTE_URL = "https://api.0x.org/swap/v1/quote";
 
-const sellAmount = 4000;
+const sellAmount = 49914;
 
 function createQueryString(params) {
   return Object.entries(params)
