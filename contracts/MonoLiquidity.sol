@@ -13,6 +13,10 @@ pragma solidity ^0.8.0;
 // wbtc 0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599
 // weth 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
 
+// 7736314000000000000000000 * 10**18; 0xB5F97357D1B443432a5CAC14EdddBAab4b5F65BF mock dai
+// 4944659000000000000000 * 10**18;  0xf772505CA5bA7AeCf394Ea0Fe48ff4BF33bB6B62 mock eth
+// mock lp address = 0x7a884A791a8E86306AF26C1869a81D204cb50030
+
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
@@ -20,6 +24,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import "hardhat/console.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 contract MonoLiquidity {
   using SafeMath for uint;
@@ -43,9 +48,14 @@ contract MonoLiquidity {
   address public exchangeProxy = 0xDef1C0ded9bec7F1a1670819833240f027b25EfF; // mainnet
 
   /* state variables */
+  uint256 volume0;
+  uint256 volume1;
+  uint256 diff1;
+  uint256 diff2;
   address private deployer;
-  mapping(address => Deposit[]) userToDeposit;
-  mapping(address => mapping(address => uint256)) userToTokenToBalance;
+  mapping(address => Deposit[]) public userToDeposit;
+  mapping(address => mapping(address => uint256)) public userToTokenToBalance;
+  mapping(address => uint256[]) public lpToSupply24h;
 
   /* events */
   event CalculatedSwapAmount(
@@ -66,18 +76,99 @@ contract MonoLiquidity {
     address indexed liquidityPool,
     uint256[] amountsRemoved
   );
+  event LPStatsCalculated(
+    address indexed liquidityPool,
+    uint256 tradingVolumeDaily,
+    uint currentSupply0,
+    uint currentSupply1,
+    uint volume0,
+    uint volume1,
+    uint initialSupply0,
+    uint initalSupply1
+  );
 
   // it's emited when a swap is executed and returns the amount of bought tokens
   event BoughtTokens(IERC20 sellToken, IERC20 buyToken, uint256 boughtAmount);
 
-  /* modifiers */
-
   /* constructor */
-  constructor() {
+  constructor(
+    uint initialSupply0,
+    uint initialSupply1,
+    address _liquidityPool
+  ) {
     deployer = msg.sender;
+    lpToSupply24h[_liquidityPool].push(initialSupply0);
+    lpToSupply24h[_liquidityPool].push(initialSupply1);
   }
 
   /* functions */
+  function getTokenValue(
+    address _token,
+    uint256 _amount
+  ) internal view returns (uint256) {
+    address priceFeedAddr;
+    if (_token == 0xB5F97357D1B443432a5CAC14EdddBAab4b5F65BF) {
+      priceFeedAddr = 0x0d79df66BE487753B02D015Fb622DED7f0E9798d;
+    } else {
+      priceFeedAddr = 0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e;
+    }
+    AggregatorV3Interface priceFeed = AggregatorV3Interface(priceFeedAddr); // Replace with appropriate ETH/USD price feed address for your network
+    (, int256 answer, , , ) = priceFeed.latestRoundData();
+    uint256 tokenPrice = uint256(answer);
+    uint256 tokenDecimals = IERC20Metadata(_token).decimals();
+    uint256 tokenValue = (_amount * tokenPrice) / (10 ** tokenDecimals);
+
+    return tokenValue;
+  }
+
+  function calculateLPStats(address _liquidityPool) external {
+    (uint256 currentSupply0, uint256 currentSupply1, ) = IUniswapV2Pair(
+      _liquidityPool
+    ).getReserves();
+
+    uint256[2] memory currentSupplies = [currentSupply0, currentSupply1];
+
+    if (currentSupply0 > (lpToSupply24h[_liquidityPool][0])) {
+      diff1 = currentSupply0 - lpToSupply24h[_liquidityPool][0];
+      volume0 = getTokenValue(
+        0xB5F97357D1B443432a5CAC14EdddBAab4b5F65BF,
+        diff1
+      );
+    } else {
+      diff1 = lpToSupply24h[_liquidityPool][0] - currentSupply0;
+      volume0 = getTokenValue(
+        0xB5F97357D1B443432a5CAC14EdddBAab4b5F65BF,
+        diff1
+      );
+    }
+    if (currentSupply1 > (lpToSupply24h[_liquidityPool][1])) {
+      diff2 = currentSupply1 - lpToSupply24h[_liquidityPool][1];
+      volume1 = getTokenValue(
+        0x7Dc0bB34236c6FF881a11d3d5042E26ff1740a6d,
+        diff2
+      );
+    } else {
+      diff2 = lpToSupply24h[_liquidityPool][1] - currentSupply1;
+      volume1 = getTokenValue(
+        0x7Dc0bB34236c6FF881a11d3d5042E26ff1740a6d,
+        diff2
+      );
+    }
+    uint256 dailyVolume = volume0 + volume1;
+    lpToSupply24h[_liquidityPool] = currentSupplies;
+
+    emit LPStatsCalculated(
+      _liquidityPool,
+      dailyVolume,
+      currentSupply0,
+      currentSupply1,
+      volume0,
+      volume1,
+      (lpToSupply24h[_liquidityPool][0]),
+      (lpToSupply24h[_liquidityPool][1])
+    );
+  }
+
   function getSwapAmount(
     uint r,
     uint a,
@@ -148,7 +239,7 @@ contract MonoLiquidity {
     // The `data` field from the API response.
     // It's the encoded data payload that needs to be sent to the 0x Exchange Proxy contract to execute the swap
     bytes calldata swapCallData
-  ) internal {
+  ) external payable {
     // Checks that the swapTarget is actually the address of 0x ExchangeProxy
     require(swapTarget == exchangeProxy, "Target not ExchangeProxy");
 
@@ -192,8 +283,7 @@ contract MonoLiquidity {
   function addLiquidity(
     address _tokenA,
     address _tokenB,
-    uint256[] memory _amounts,
-    address _liquidityProvider
+    uint256[] memory _amounts
   ) external payable {
     // get pair using uniswap factory interface
     address pair = IUniswapV2Factory(FACTORY).getPair(_tokenA, _tokenB);
@@ -201,19 +291,11 @@ contract MonoLiquidity {
 
     // liquidity provider deposits tokens to this contract
     require(
-      IERC20(_tokenA).transferFrom(
-        _liquidityProvider,
-        address(this),
-        _amounts[0]
-      ),
+      IERC20(_tokenA).transferFrom(msg.sender, address(this), _amounts[0]),
       "Deposit for token A failed"
     );
     require(
-      IERC20(_tokenB).transferFrom(
-        _liquidityProvider,
-        address(this),
-        _amounts[1]
-      ),
+      IERC20(_tokenB).transferFrom(msg.sender, address(this), _amounts[1]),
       "Deposit for token B failed"
     );
 
@@ -249,12 +331,12 @@ contract MonoLiquidity {
       amountProvided: amountsProvided,
       LPTokensReceived: lpTokensMinted
     });
-    userToDeposit[_liquidityProvider].push(deposit);
-    userToTokenToBalance[_liquidityProvider][_tokenA] += (_amounts[0] -
+    userToDeposit[msg.sender].push(deposit);
+    userToTokenToBalance[msg.sender][_tokenA] += (_amounts[0] -
       amountsProvided[0]);
-    userToTokenToBalance[_liquidityProvider][_tokenA] += (_amounts[1] -
+    userToTokenToBalance[msg.sender][_tokenA] += (_amounts[1] -
       amountsProvided[1]);
-    emit LiquidityProvided(_liquidityProvider, pair, amountsProvided);
+    emit LiquidityProvided(msg.sender, pair, amountsProvided);
   }
 
   // might need modifier, check if can be done via defender first
